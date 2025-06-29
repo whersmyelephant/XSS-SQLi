@@ -15,7 +15,7 @@
         <h3><i class="fas fa-search"></i> Rechercher un utilisateur</h3>
         <form method="GET">
             <div class="search-box">
-                <input type="text" name="search" placeholder="Rechercher par nom...">
+                <input type="text" name="search" placeholder="Rechercher par nom..." value="{{ request.args.get('search', '') }}">
                 <button type="submit"><i class="fas fa-search"></i></button>
             </div>
         </form>
@@ -28,25 +28,49 @@
         <table class="users-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nom d'utilisateur</th>
-                    <th>Nom complet</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
-                    <th>Date de naissance</th>
-                    <th>SSN</th>
+                    {% if is_search %}
+                        {# Mode recherche - affichage complet #}
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Phone</th>
+                        <th>Birthdate</th>
+                        <th>SSN</th>
+                        <th>Address</th>
+                    {% else %}
+                        {# Mode normal - données limitées #}
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.full_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.phone }}</td>
-                    <td>{{ user.birthdate }}</td>
-                    <td>{{ user.ssn }}</td>
+                    {% if is_search %}
+                        {# Mode recherche - données complètes #}
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.birthdate }}</td>
+                        <td>{{ user.ssn }}</td>
+                        <td>{{ user.address }}</td>
+                    {% else %}
+                        {# Mode normal - données limitées #}
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

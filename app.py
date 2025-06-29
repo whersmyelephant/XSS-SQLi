@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -8,9 +9,15 @@ app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=False,  # Permet l'accès JS
+    SESSION_COOKIE_SAMESITE='Lax',
+    REMEMBER_COOKIE_HTTPONLY=False
+)
 db = SQLAlchemy(app)
 
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
@@ -20,11 +27,15 @@ class User(db.Model):
     phone = db.Column(db.String(20))
     birthdate = db.Column(db.String(20))
     ssn = db.Column(db.String(20))
+    address = db.Column(db.String(200))  # Champ ajouté
 
-# Initialisation de la base de données
+# Fonction d'initialisation de la base de données
 def init_db():
     with app.app_context():
+        # Créer les tables si elles n'existent pas
         db.create_all()
+        
+        # Vérifier et créer l'utilisateur admin
         if not User.query.filter_by(username='admin').first():
             admin = User(
                 username='admin',
@@ -34,11 +45,13 @@ def init_db():
                 email='admin@example.com',
                 phone='0123456789',
                 birthdate='1990-01-01',
-                ssn='123-45-6789'
+                ssn='123-45-6789',
+                address='123 Admin Street, Paris'
             )
             db.session.add(admin)
             print("✅ Compte admin créé")
         
+        # Vérifier et créer l'utilisateur user1
         if not User.query.filter_by(username='user1').first():
             user1 = User(
                 username='user1',
@@ -47,13 +60,22 @@ def init_db():
                 email='user1@example.com',
                 phone='9876543210',
                 birthdate='1995-05-05',
-                ssn='987-65-4321'
+                ssn='987-65-4321',
+                address='456 User Avenue, Lyon'
             )
             db.session.add(user1)
             print("✅ Compte user1 créé")
         
         db.session.commit()
         print("✅ Base de données initialisée")
+
+#supprimer toutes les tables et les recréer
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+
+# Appeler la fonction d'initialisation au démarrage
+init_db()
 
 # Routes
 @app.route('/')
@@ -99,7 +121,8 @@ def register():
             email=email,
             phone=request.form.get('phone', ''),
             birthdate=request.form.get('birthdate', ''),
-            ssn=request.form.get('ssn', '')
+            ssn=request.form.get('ssn', ''),
+            address=request.form.get('address', '')
         )
         
         db.session.add(new_user)
@@ -140,16 +163,23 @@ def admin():
     
     search = request.args.get('search', '')
     if search:
-        # VULN SQLi intentionnelle
-        query = f"SELECT * FROM user WHERE full_name LIKE '%{search}%'"
-        results = db.engine.execute(query)
+        # Version vulnérable avec SQLi
+        query = text(f"SELECT * FROM user WHERE full_name LIKE '%{search}%'")
+        with db.engine.connect() as conn:
+            results = conn.execute(query)
+            # Convertir les résultats en liste de dictionnaires
+            users = [dict(row) for row in results.mappings()]
     else:
-        results = User.query.all()
+        # Récupération normale sans données sensibles
+        users = db.session.query(
+            User.id, 
+            User.username, 
+            User.full_name, 
+            User.email,
+            User.role
+        ).all()
     
-    return render_template('admin.html', users=results)
+    return render_template('admin.html', users=users, is_search=bool(search))
 
 if __name__ == '__main__':
-    # Créer la base de données si elle n'existe pas
-    if not os.path.exists('database.db'):
-        init_db()
     app.run(debug=True, port=5000)
