@@ -1,28 +1,64 @@
 {% extends "base.html" %}
 
+{% block title %}Accueil{% endblock %}
+
 {% block content %}
-    <h2>Bienvenue sur notre application de test</h2>
-    
-    <p>Cette application présente deux vulnérabilités critiques :</p>
-    <ol>
-        <li>XSS (Cross-Site Scripting) dans la page de recherche</li>
-        <li>SQL Injection dans la page d'administration</li>
-    </ol>
-    
-    <h3>Fonctionnalités :</h3>
-    <ul>
-        <li>Connexion avec les comptes :
-            <ul>
-                <li>admin / adminpass (rôle administrateur)</li>
-                <li>user1 / userpass (rôle utilisateur)</li>
-            </ul>
-        </li>
-        <li>Page profil avec informations personnelles</li>
-        <li>Page d'administration (accessible uniquement par l'admin)</li>
-        <li>Page de recherche vulnérable à XSS</li>
-    </ul>
-    
-    <h3>Test XSS :</h3>
-    <p>Essayez ce payload dans la recherche :</p>
-    <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code>
+<section class="hero">
+    <div class="hero-content">
+        <h2>Démonstration des vulnérabilités web</h2>
+        <p>Apprenez à identifier et prévenir les risques de sécurité dans les applications web</p>
+        <div class="hero-buttons">
+            {% if 'username' not in session %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Se connecter</a>
+            {% endif %}
+            <a href="#features" class="btn btn-secondary">En savoir plus</a>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="features">
+    <h2>Fonctionnalités démontrées</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bug"></i>
+            </div>
+            <h3>XSS (Cross-Site Scripting)</h3>
+            <p>Exploitation d'une vulnérabilité XSS via un champ de recherche non sécurisé</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h3>Injection SQL</h3>
+            <p>Exploitation d'une injection SQL dans un panneau d'administration</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-secret"></i>
+            </div>
+            <h3>Vol de session</h3>
+            <p>Récupération des cookies de session d'un administrateur</p>
+        </div>
+    </div>
+</section>
+
+<section class="test-accounts">
+    <h2>Comptes de test</h2>
+    <div class="accounts-grid">
+        <div class="account-card">
+            <h3><i class="fas fa-user-shield"></i> Administrateur</h3>
+            <p><strong>Identifiant:</strong> admin</p>
+            <p><strong>Mot de passe:</strong> adminpass</p>
+        </div>
+        
+        <div class="account-card">
+            <h3><i class="fas fa-user"></i> Utilisateur</h3>
+            <p><strong>Identifiant:</strong> user1</p>
+            <p><strong>Mot de passe:</strong> userpass</p>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -1,14 +1,32 @@
 {% extends "base.html" %}
 
+{% block title %}Recherche{% endblock %}
+
 {% block content %}
-    <h2>Résultats de recherche</h2>
+<section class="search-results">
+    <h2><i class="fas fa-search"></i> Résultats de recherche</h2>
     
-    <p>Votre recherche : <strong>{{ query }}</strong></p>
+    <div class="search-query">
+        <p>Vous avez recherché : <strong>{{ query }}</strong></p>
+    </div>
     
-    <!-- VULN XSS: Injection directe sans échappement -->
-    <p>Résultats pour : {{ query | safe }}</p>
+    <div class="results-container">
+        <!-- VULN XSS: Injection directe sans échappement -->
+        <p>Résultats pour : {{ query | safe }}</p>
+        
+        <div class="no-results">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Aucun résultat trouvé pour votre recherche</p>
+        </div>
+    </div>
     
-    <p>Aucun résultat trouvé.</p>
-    
-    <a href="{{ url_for('profile') }}">Retour au profil</a>
+    <div class="search-actions">
+        <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour au profil
+        </a>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Retour à l'accueil
+        </a>
+    </div>
+</section>
 {% endblock %}

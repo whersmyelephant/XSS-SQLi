@@ -1,25 +1,45 @@
 @echo off
-REM Création de l'arborescence de fichiers
+set "ROOT=XSS&SQLi"
 
-mkdir templates
-mkdir attaquant_server
+rem === Création des dossiers ===
+mkdir "%ROOT%"
+mkdir "%ROOT%\static"
+mkdir "%ROOT%\static\css"
+mkdir "%ROOT%\static\img"
+mkdir "%ROOT%\templates"
+mkdir "%ROOT%\attaquant_server"
+mkdir "%ROOT%\attaquant_server\templates"
 
-REM Création des fichiers racine
-type nul > app.py
-type nul > database.db
-type nul > requirements.txt
+rem === Création des fichiers principaux ===
+call :createFile "%ROOT%\app.py"
+call :createFile "%ROOT%\database.db"
+call :createFile "%ROOT%\requirements.txt"
 
-REM Création des fichiers templates
-type nul > templates\base.html
-type nul > templates\index.html
-type nul > templates\login.html
-type nul > templates\profile.html
-type nul > templates\admin.html
-type nul > templates\search.html
+rem === Fichiers dans static ===
+call :createFile "%ROOT%\static\css\style.css"
+call :createFile "%ROOT%\static\img\logo.png"
 
-REM Création du fichier pour le serveur attaquant
-type nul > attaquant_server\app.py
+rem === Fichiers dans templates ===
+call :createFile "%ROOT%\templates\base.html"
+call :createFile "%ROOT%\templates\index.html"
+call :createFile "%ROOT%\templates\login.html"
+call :createFile "%ROOT%\templates\profile.html"
+call :createFile "%ROOT%\templates\search.html"
+call :createFile "%ROOT%\templates\admin.html"
 
-REM Affichage de la structure créée
-echo Structure créée :
-tree /F
+rem === Fichiers attaquant_server ===
+call :createFile "%ROOT%\attaquant_server\app.py"
+call :createFile "%ROOT%\attaquant_server\templates\home.html"
+call :createFile "%ROOT%\attaquant_server\templates\dashboard.html"
+call :createFile "%ROOT%\attaquant_server\stolen_cookies.txt"
+
+goto :eof
+
+:createFile
+if not exist %1 (
+    echo. > %1
+    echo Created: %1
+) else (
+    echo Exists: %1
+)
+exit /b

@@ -3,50 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application de Test</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
-        .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
-        .alert-danger { background-color: #f8d7da; color: #721c24; }
-        .alert-success { background-color: #d4edda; color: #155724; }
-        form { margin: 20px 0; }
-        input[type="text"], input[type="password"] { padding: 8px; width: 250px; }
-        button { padding: 8px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
+    <title>SecurApp - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Application de Test</h1>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="SecurApp Logo">
+                <h1>SecurApp</h1>
+            </div>
             <nav>
-                {% if 'username' in session %}
-                    <span>Connecté en tant que <strong>{{ session.username }}</strong> ({{ session.role }})</span>
-                    <a href="{{ url_for('profile') }}">Profil</a>
-                    {% if session.role == 'admin' %}
-                        <a href="{{ url_for('admin') }}">Admin</a>
+                <ul>
+                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Accueil</a></li>
+                    {% if 'username' in session %}
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profil</a></li>
+                        {% if session.role == 'admin' %}
+                        <li><a href="{{ url_for('admin') }}"><i class="fas fa-lock"></i> Admin</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
                     {% endif %}
-                    <a href="{{ url_for('logout') }}">Déconnexion</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}">Connexion</a>
-                {% endif %}
+                </ul>
             </nav>
-        </header>
+        </div>
+    </header>
 
+    <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
-
+        
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 SecurApp - Démonstration de sécurité web</p>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-shield-alt"></i> Politique de sécurité</a>
+                <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
