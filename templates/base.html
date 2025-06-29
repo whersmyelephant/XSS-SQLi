@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application de Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+        .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        form { margin: 20px 0; }
+        input[type="text"], input[type="password"] { padding: 8px; width: 250px; }
+        button { padding: 8px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Application de Test</h1>
+            <nav>
+                {% if 'username' in session %}
+                    <span>Connecté en tant que <strong>{{ session.username }}</strong> ({{ session.role }})</span>
+                    <a href="{{ url_for('profile') }}">Profil</a>
+                    {% if session.role == 'admin' %}
+                        <a href="{{ url_for('admin') }}">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}">Déconnexion</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Connexion</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Administration</h2>
+    
+    <form method="GET">
+        <input type="text" name="search" placeholder="Rechercher un utilisateur...">
+        <button type="submit">Rechercher</button>
+    </form>
+    
+    {% if users %}
+        <h3>Utilisateurs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Nom complet</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Date de naissance</th>
+                    <th>SSN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.birthdate }}</td>
+                        <td>{{ user.ssn }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun utilisateur trouvé.</p>
+    {% endif %}
+{% endblock %}

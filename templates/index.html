@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Bienvenue sur notre application de test</h2>
+    
+    <p>Cette application présente deux vulnérabilités critiques :</p>
+    <ol>
+        <li>XSS (Cross-Site Scripting) dans la page de recherche</li>
+        <li>SQL Injection dans la page d'administration</li>
+    </ol>
+    
+    <h3>Fonctionnalités :</h3>
+    <ul>
+        <li>Connexion avec les comptes :
+            <ul>
+                <li>admin / adminpass (rôle administrateur)</li>
+                <li>user1 / userpass (rôle utilisateur)</li>
+            </ul>
+        </li>
+        <li>Page profil avec informations personnelles</li>
+        <li>Page d'administration (accessible uniquement par l'admin)</li>
+        <li>Page de recherche vulnérable à XSS</li>
+    </ul>
+    
+    <h3>Test XSS :</h3>
+    <p>Essayez ce payload dans la recherche :</p>
+    <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code>
+{% endblock %}

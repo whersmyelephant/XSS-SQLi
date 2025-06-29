@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Résultats de recherche</h2>
+    
+    <p>Votre recherche : <strong>{{ query }}</strong></p>
+    
+    <!-- VULN XSS: Injection directe sans échappement -->
+    <p>Résultats pour : {{ query | safe }}</p>
+    
+    <p>Aucun résultat trouvé.</p>
+    
+    <a href="{{ url_for('profile') }}">Retour au profil</a>
+{% endblock %}

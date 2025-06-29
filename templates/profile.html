@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Votre Profil</h2>
+    
+    <div>
+        <h3>Informations personnelles</h3>
+        <p><strong>Nom complet:</strong> {{ user.full_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Téléphone:</strong> {{ user.phone }}</p>
+        <p><strong>Date de naissance:</strong> {{ user.birthdate }}</p>
+        <p><strong>Numéro de sécurité sociale:</strong> {{ user.ssn }}</p>
+    </div>
+    
+    <div>
+        <h3>Recherche</h3>
+        <form action="{{ url_for('search') }}">
+            <input type="text" name="q" placeholder="Recherche...">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+{% endblock %}
