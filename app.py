@@ -3,19 +3,26 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import timedelta
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+app.config['SESSION_COOKIE_SECURE'] = False
 
 app.config.update(
-    SESSION_COOKIE_HTTPONLY=False,  # Permet l'accès JS
+    SECRET_KEY='votre_cle_secrete_tres_secure',
+    SESSION_COOKIE_NAME='session',
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=False,  # False pour HTTP en développement
     SESSION_COOKIE_SAMESITE='Lax',
-    REMEMBER_COOKIE_HTTPONLY=False
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)
 )
-db = SQLAlchemy(app)
 
+db = SQLAlchemy(app)
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
