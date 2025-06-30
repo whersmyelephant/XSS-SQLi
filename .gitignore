@@ -1,0 +1,43 @@
+### Python ###
+# Fichiers de compilation
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environnements virtuels (à exclure mais documenter dans le README)
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Fichiers de configuration sensible (exclure mais fournir des exemples)
+.env
+secrets.py
+
+# Fichiers de sortie générés
+*.log
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+stolen_cookies.json
+stolen_data.db
+
+# Fichiers de cache
+*.cache
+.pytest_cache/
+.mypy_cache/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Fichiers spécifiques Windows
+*.lnk
+*.bak
+*.backup
+*.swp
+*~
