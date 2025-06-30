@@ -6,7 +6,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
 
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            static_folder='static',
+            static_url_path='/static',
+            template_folder='templates')
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -16,7 +19,7 @@ app.config['SESSION_COOKIE_SECURE'] = False
 app.config.update(
     SECRET_KEY='votre_cle_secrete_tres_secure',
     SESSION_COOKIE_NAME='session',
-    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_HTTPONLY=False  , #False pour permettre l'accès Js
     SESSION_COOKIE_SECURE=False,  # False pour HTTP en développement
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)

