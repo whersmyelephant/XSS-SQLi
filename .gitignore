@@ -16,6 +16,9 @@ ENV/
 .env
 secrets.py
 
+# Fichiers d'instance
+/instance/
+
 # Fichiers de sortie générés
 *.log
 *.db
