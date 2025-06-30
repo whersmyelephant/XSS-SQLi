@@ -1,5 +1,4 @@
 flask
 flask-sqlalchemy
-sqlite3
 werkzeug
 cryptography
